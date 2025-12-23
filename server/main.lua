@@ -8,606 +8,243 @@
 
 
 
-local L0_1, L1_1, L2_1, L3_1, L4_1, L5_1, L6_1, L7_1, L8_1, L9_1, L10_1, L11_1
 ServerConfig = nil
-L0_1 = nil
-L1_1 = {}
-L2_1 = HarvestingZones
-L3_1 = Plants
-L4_1 = Lamps
-L5_1 = ProcessingTables
-L6_1 = PocketProcessing
-L7_1 = WholesaleSelling
-L8_1 = Consumables
-L1_1[1] = L2_1
-L1_1[2] = L3_1
-L1_1[3] = L4_1
-L1_1[4] = L5_1
-L1_1[5] = L6_1
-L1_1[6] = L7_1
-L1_1[7] = L8_1
-function L2_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2
-  if nil ~= A0_2 then
-    L1_2 = type
-    L2_2 = A0_2
-    L1_2 = L1_2(L2_2)
-    if "number" ~= L1_2 then
-      L1_2 = type
-      L2_2 = A0_2
-      L1_2 = L1_2(L2_2)
-      if "string" ~= L1_2 then
-        L1_2 = type
-        L2_2 = A0_2
-        L1_2 = L1_2(L2_2)
-        if "boolean" ~= L1_2 then
-          L1_2 = type
-          L2_2 = A0_2
-          L1_2 = L1_2(L2_2)
-          if "function" ~= L1_2 then
-            goto lbl_24
-          end
-        end
-      end
+local encodedConfigCache = nil
+local reloadableModules = {
+  HarvestingZones,
+  Plants,
+  Lamps,
+  ProcessingTables,
+  PocketProcessing,
+  WholesaleSelling,
+  Consumables
+}
+function NormalizeValue(value)
+  if nil ~= value then
+    if "number" == type(value) or "string" == type(value) or "boolean" == type(value) or "function" == type(value) then
+      return value
     end
   end
-  do return A0_2 end
-  ::lbl_24::
-  L1_2 = A0_2.x
-  if nil ~= L1_2 then
-    L1_2 = A0_2.y
-    if nil ~= L1_2 then
-      L1_2 = A0_2.z
-      if nil ~= L1_2 then
-        L1_2 = A0_2.w
-        if nil ~= L1_2 then
-          L1_2 = vector4
-          L2_2 = A0_2.x
-          L3_2 = A0_2.y
-          L4_2 = A0_2.z
-          L5_2 = A0_2.w
-          return L1_2(L2_2, L3_2, L4_2, L5_2)
-        else
-          L1_2 = vector3
-          L2_2 = A0_2.x
-          L3_2 = A0_2.y
-          L4_2 = A0_2.z
-          return L1_2(L2_2, L3_2, L4_2)
-        end
-      end
-    end
-  end
-  L1_2 = {}
-  L2_2 = pairs
-  L3_2 = A0_2
-  L2_2, L3_2, L4_2, L5_2 = L2_2(L3_2)
-  for L6_2, L7_2 in L2_2, L3_2, L4_2, L5_2 do
-    L8_2 = L6_2
-    L9_2 = type
-    L10_2 = L6_2
-    L9_2 = L9_2(L10_2)
-    if "string" == L9_2 then
-      L9_2 = tonumber
-      L10_2 = L6_2
-      L9_2 = L9_2(L10_2)
-      if L9_2 then
-        L8_2 = L9_2
-        L1_2[L6_2] = nil
-      end
-    end
-    L9_2 = type
-    L10_2 = L7_2
-    L9_2 = L9_2(L10_2)
-    if "string" == L9_2 and "" == L7_2 then
-      L1_2[L8_2] = nil
+  if nil ~= value.x and nil ~= value.y and nil ~= value.z then
+    if nil ~= value.w then
+      return vector4(value.x, value.y, value.z, value.w)
     else
-      L9_2 = L2_1
-      L10_2 = L7_2
-      L9_2 = L9_2(L10_2)
-      L1_2[L8_2] = L9_2
+      return vector3(value.x, value.y, value.z)
     end
   end
-  return L1_2
+  local normalizedTable = {}
+  for key, itemValue in pairs(value) do
+    local normalizedKey = key
+    if "string" == type(key) then
+      local numericKey = tonumber(key)
+      if numericKey then
+        normalizedKey = numericKey
+        normalizedTable[key] = nil
+      end
+    end
+    if "string" == type(itemValue) and "" == itemValue then
+      normalizedTable[normalizedKey] = nil
+    else
+      normalizedTable[normalizedKey] = NormalizeValue(itemValue)
+    end
+  end
+  return normalizedTable
 end
-L3_1 = {}
-L4_1 = {}
-L3_1.harvestingZones = L4_1
-L4_1 = {}
-L3_1.processingZones = L4_1
-L4_1 = {}
-L3_1.plants = L4_1
-L4_1 = {}
-L3_1.lamps = L4_1
-L4_1 = {}
-L3_1.laboratories = L4_1
-L4_1 = {}
-L3_1.processingTables = L4_1
-L4_1 = {}
-L3_1.suppliers = L4_1
-L4_1 = {}
-L3_1.consumables = L4_1
-L4_1 = {}
-L3_1.pocketProcessing = L4_1
-L4_1 = {}
-L3_1.retailSellingZones = L4_1
-L4_1 = {}
-L4_1.enabled = false
-L4_1.phoneItem = "phone"
-L5_1 = {}
-L5_1.min = 3600000
-L5_1.max = 7200000
-L4_1.clientInterval = L5_1
-L5_1 = {}
-L4_1.locations = L5_1
-L4_1.account = "money"
-L5_1 = {}
-L4_1.items = L5_1
-L3_1.wholesaleSettings = L4_1
-L4_1 = {}
-L4_1.sellDivisor = 2
-L4_1.plantInterval = 300000
-L4_1.retailSellingCommand = "sell"
-L5_1 = {}
-L5_1.watering = 3000
-L5_1.fertilizing = 3000
-L5_1.harvesting = 7500
-L4_1.progressDurations = L5_1
-L4_1.webhook = ""
-L3_1.generalSettings = L4_1
-function L4_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2
-  L0_2 = MySQL
-  L0_2 = L0_2.single
-  L0_2 = L0_2.await
-  L1_2 = "SELECT data FROM lunar_drugscreator WHERE `key` = ?"
-  L2_2 = {}
-  L3_2 = "config"
-  L2_2[1] = L3_2
-  L0_2 = L0_2(L1_2, L2_2)
-  if not L0_2 then
-    L1_2 = L2_1
-    L2_2 = L3_1
-    L1_2 = L1_2(L2_2)
-    ServerConfig = L1_2
+local fallbackConfig = {
+  harvestingZones = {},
+  processingZones = {},
+  plants = {},
+  lamps = {},
+  laboratories = {},
+  processingTables = {},
+  suppliers = {},
+  consumables = {},
+  pocketProcessing = {},
+  retailSellingZones = {},
+  wholesaleSettings = {
+    enabled = false,
+    phoneItem = "phone",
+    clientInterval = {
+      min = 3600000,
+      max = 7200000
+    },
+    locations = {},
+    account = "money",
+    items = {}
+  },
+  generalSettings = {
+    sellDivisor = 2,
+    plantInterval = 300000,
+    retailSellingCommand = "sell",
+    progressDurations = {
+      watering = 3000,
+      fertilizing = 3000,
+      harvesting = 7500
+    },
+    webhook = ""
+  }
+}
+function LoadServerConfigFromDatabase()
+  local result = MySQL.single.await("SELECT data FROM lunar_drugscreator WHERE `key` = ?", { "config" })
+  if not result then
+    ServerConfig = NormalizeValue(fallbackConfig)
   else
-    L1_2 = L2_1
-    L2_2 = json
-    L2_2 = L2_2.decode
-    L3_2 = L0_2.data
-    L2_2, L3_2, L4_2, L5_2 = L2_2(L3_2)
-    L1_2 = L1_2(L2_2, L3_2, L4_2, L5_2)
-    ServerConfig = L1_2
+    ServerConfig = NormalizeValue(json.decode(result.data))
   end
-  L1_2 = nil
-  L0_1 = L1_2
-  L1_2 = 1
-  L2_2 = L1_1
-  L2_2 = #L2_2
-  L3_2 = 1
-  for L4_2 = L1_2, L2_2, L3_2 do
-    L5_2 = L1_1
-    L5_2 = L5_2[L4_2]
-    L5_2 = L5_2.reload
-    L5_2()
+  encodedConfigCache = nil
+  for _, module in ipairs(reloadableModules) do
+    module.reload()
   end
-  L1_2 = ServerConfig
-  L1_2 = L1_2.generalSettings
-  L1_2.webhook = nil
+  ServerConfig.generalSettings.webhook = nil
 end
-function L5_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2
-  L0_2 = json
-  L0_2 = L0_2.encode
-  L1_2 = ServerConfig
-  L0_2 = L0_2(L1_2)
-  L1_2 = MySQL
-  L1_2 = L1_2.update
-  L1_2 = L1_2.await
-  L2_2 = "REPLACE INTO lunar_drugscreator (`key`, `data`) VALUES (?, ?)"
-  L3_2 = {}
-  L4_2 = "config"
-  L5_2 = L0_2
-  L3_2[1] = L4_2
-  L3_2[2] = L5_2
-  L1_2(L2_2, L3_2)
+function PersistServerConfig()
+  local encodedConfig = json.encode(ServerConfig)
+  MySQL.update.await("REPLACE INTO lunar_drugscreator (`key`, `data`) VALUES (?, ?)", { "config", encodedConfig })
 end
-L6_1 = MySQL
-L6_1 = L6_1.ready
-function L7_1()
-  local L0_2, L1_2, L2_2, L3_2
-  L0_2 = Wait
-  L1_2 = 1000
-  L0_2(L1_2)
-  L0_2 = false
-  while not L0_2 do
-    L1_2 = pcall
-    L2_2 = L4_1
-    L1_2 = L1_2(L2_2)
-    if L1_2 then
-      L0_2 = true
+MySQL.ready(function()
+  Wait(1000)
+  local loaded = false
+  while not loaded do
+    local success = pcall(LoadServerConfigFromDatabase)
+    if success then
+      loaded = true
     else
-      L2_2 = Wait
-      L3_2 = 100
-      L2_2(L3_2)
+      Wait(100)
     end
   end
-end
-L6_1(L7_1)
-function L6_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2
-  L2_2 = type
-  L3_2 = A0_2
-  L2_2 = L2_2(L3_2)
-  if "string" ~= L2_2 then
-    L2_2 = json
-    L2_2 = L2_2.encode
-    L3_2 = A0_2
-    L2_2 = L2_2(L3_2)
-    A0_2 = L2_2
+end)
+function EncodeConfigPayload(payload, secretKey)
+  if "string" ~= type(payload) then
+    payload = json.encode(payload)
   end
-  L2_2 = ""
-  L3_2 = 1
-  L4_2 = #A0_2
-  L5_2 = 1
-  for L6_2 = L3_2, L4_2, L5_2 do
-    L7_2 = string
-    L7_2 = L7_2.byte
-    L8_2 = A1_2
-    L9_2 = #A1_2
-    L9_2 = L6_2 % L9_2
-    L9_2 = L9_2 + 1
-    L7_2 = L7_2(L8_2, L9_2)
-    L8_2 = L2_2
-    L9_2 = string
-    L9_2 = L9_2.char
-    L10_2 = string
-    L10_2 = L10_2.byte
-    L11_2 = A0_2
-    L12_2 = L6_2
-    L10_2 = L10_2(L11_2, L12_2)
-    L10_2 = L10_2 ~ L7_2
-    L9_2 = L9_2(L10_2)
-    L8_2 = L8_2 .. L9_2
-    L2_2 = L8_2
+  local encodedPayload = ""
+  for index = 1, #payload, 1 do
+    local secretByte = string.byte(secretKey, index % #secretKey + 1)
+    encodedPayload = encodedPayload .. string.char(string.byte(payload, index) ~ secretByte)
   end
-  return L2_2
+  return encodedPayload
 end
-function L7_1()
-  local L0_2, L1_2, L2_2
-  L0_2 = L0_1
-  if not L0_2 then
-    L0_2 = L6_1
-    L1_2 = ServerConfig
-    L2_2 = "PUDI6iaaIBish2g71o0QKJVmMnTWAKGviIpuO"
-    L0_2 = L0_2(L1_2, L2_2)
-    L0_1 = L0_2
+function GetEncodedServerConfig()
+  if not encodedConfigCache then
+    encodedConfigCache = EncodeConfigPayload(ServerConfig, "PUDI6iaaIBish2g71o0QKJVmMnTWAKGviIpuO")
   end
-  L0_2 = L0_1
-  return L0_2
+  return encodedConfigCache
 end
-L8_1 = {}
-L9_1 = RegisterNetEvent
-L10_1 = "lunar_drugscreator:init"
-function L11_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2
-  L0_2 = source
-  L1_2 = L8_1
-  L1_2 = L1_2[L0_2]
-  if L1_2 then
+local initializedPlayers = {}
+RegisterNetEvent("lunar_drugscreator:init")
+AddEventHandler("lunar_drugscreator:init", function()
+  local playerId = source
+  if initializedPlayers[playerId] then
     return
   end
-  L1_2 = L8_1
-  L1_2[L0_2] = true
-  while true do
-    L1_2 = ServerConfig
-    if L1_2 then
-      break
-    end
-    L1_2 = Wait
-    L2_2 = 100
-    L1_2(L2_2)
+  initializedPlayers[playerId] = true
+  while not ServerConfig do
+    Wait(100)
   end
-  L1_2 = L7_1
-  L1_2 = L1_2()
-  L2_2 = TriggerLatentClientEvent
-  L3_2 = "lunar_drugscreator:init"
-  L4_2 = L0_2
-  L5_2 = 50000
-  L6_2 = L1_2
-  L2_2(L3_2, L4_2, L5_2, L6_2)
-end
-L9_1(L10_1, L11_1)
-function L9_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2
-  L1_2 = Framework
-  L1_2 = L1_2.name
-  if "qb-core" == L1_2 then
-    L1_2 = IsPlayerAceAllowed
-    L2_2 = A0_2
-    L3_2 = "drugscreator_admin"
-    return L1_2(L2_2, L3_2)
+  local encodedPayload = GetEncodedServerConfig()
+  TriggerLatentClientEvent("lunar_drugscreator:init", playerId, 50000, encodedPayload)
+end)
+function IsPlayerAdmin(playerId)
+  if Framework.name == "qb-core" then
+    return IsPlayerAceAllowed(playerId, "drugscreator_admin")
   else
-    L1_2 = Framework
-    L1_2 = L1_2.getPlayerFromId
-    L2_2 = A0_2
-    L1_2 = L1_2(L2_2)
-    L2_2 = L1_2 or L2_2
-    if L1_2 then
-      L3_2 = L1_2
-      L2_2 = L1_2.hasOneOfGroups
-      L4_2 = Config
-      L4_2 = L4_2.adminGroups
-      L2_2 = L2_2(L3_2, L4_2)
-    end
-    return L2_2
+    local player = Framework.getPlayerFromId(playerId)
+    local hasAdminGroup = player and player.hasOneOfGroups(Config.adminGroups)
+    return hasAdminGroup
   end
 end
-IsPlayerAdmin = L9_1
-L9_1 = RegisterNetEvent
-L10_1 = "lunar_drugscreator:updateServerConfig"
-function L11_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2
-  L2_2 = source
-  L3_2 = ServerConfig
-  if L3_2 then
-    L3_2 = IsPlayerAdmin
-    L4_2 = L2_2
-    L3_2 = L3_2(L4_2)
-    if L3_2 then
-      goto lbl_11
+RegisterNetEvent("lunar_drugscreator:updateServerConfig")
+AddEventHandler("lunar_drugscreator:updateServerConfig", function(configPath, updatedValue)
+  local playerId = source
+  if not ServerConfig or not IsPlayerAdmin(playerId) then
+    return
+  end
+  local configBranch = ServerConfig
+  for index = 1, #configPath - 1, 1 do
+    configBranch = configBranch[configPath[index]]
+  end
+  local finalKey = configPath[#configPath]
+  configBranch[finalKey] = NormalizeValue(updatedValue)
+  if configPath[1] == "generalSettings" then
+    UpdateWebhook(ServerConfig.generalSettings.webhook)
+    updatedValue.webhook = nil
+  end
+  ServerConfig.generalSettings.webhook = nil
+  encodedConfigCache = nil
+  TriggerClientEvent("lunar_drugscreator:updateServerConfig", -1, configPath, updatedValue)
+  PersistServerConfig()
+  for _, module in ipairs(reloadableModules) do
+    if module.field == configPath[1] then
+      module.reload()
     end
   end
-  do return end
-  ::lbl_11::
-  L3_2 = ServerConfig
-  L4_2 = 1
-  L5_2 = #A0_2
-  L5_2 = L5_2 - 1
-  L6_2 = 1
-  for L7_2 = L4_2, L5_2, L6_2 do
-    L8_2 = A0_2[L7_2]
-    L3_2 = L3_2[L8_2]
-  end
-  L4_2 = #A0_2
-  L4_2 = A0_2[L4_2]
-  L5_2 = L2_1
-  L6_2 = A1_2
-  L5_2 = L5_2(L6_2)
-  L3_2[L4_2] = L5_2
-  L4_2 = A0_2[1]
-  if "generalSettings" == L4_2 then
-    L4_2 = UpdateWebhook
-    L5_2 = ServerConfig
-    L5_2 = L5_2.generalSettings
-    L5_2 = L5_2.webhook
-    L4_2(L5_2)
-    A1_2.webhook = nil
-  end
-  L4_2 = ServerConfig
-  L4_2 = L4_2.generalSettings
-  L4_2.webhook = nil
-  L4_2 = nil
-  L0_1 = L4_2
-  L4_2 = TriggerClientEvent
-  L5_2 = "lunar_drugscreator:updateServerConfig"
-  L6_2 = -1
-  L7_2 = A0_2
-  L8_2 = A1_2
-  L4_2(L5_2, L6_2, L7_2, L8_2)
-  L4_2 = L5_1
-  L4_2()
-  L4_2 = 1
-  L5_2 = L1_1
-  L5_2 = #L5_2
-  L6_2 = 1
-  for L7_2 = L4_2, L5_2, L6_2 do
-    L8_2 = L1_1
-    L8_2 = L8_2[L7_2]
-    L8_2 = L8_2.field
-    L9_2 = A0_2[1]
-    if L8_2 == L9_2 then
-      L8_2 = L1_1
-      L8_2 = L8_2[L7_2]
-      L8_2 = L8_2.reload
-      L8_2()
-    end
-  end
-end
-L9_1(L10_1, L11_1)
-L9_1 = CreateThread
-function L10_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2
-  L0_2 = GetResourceKvpInt
-  L1_2 = "lunar_drugscreator:onboarded"
-  L0_2 = L0_2(L1_2)
-  L0_2 = 1 == L0_2
-  L1_2 = GlobalState
-  L2_2 = L1_2
-  L1_2 = L1_2.set
-  L3_2 = "lunar_drugscreator:onboarded"
-  L4_2 = L0_2
-  L5_2 = true
-  L1_2(L2_2, L3_2, L4_2, L5_2)
-  L1_2 = RegisterNetEvent
-  L2_2 = "lunar_drugscreator:usePresetConfig"
-  function L3_2(A0_3)
-    local L1_3, L2_3, L3_3, L4_3, L5_3, L6_3, L7_3
-    L1_3 = source
-    L2_3 = IsPlayerAdmin
-    L3_3 = L1_3
-    L2_3 = L2_3(L3_3)
-    if not L2_3 then
+end)
+CreateThread(function()
+  local onboarded = GetResourceKvpInt("lunar_drugscreator:onboarded")
+  onboarded = 1 == onboarded
+  GlobalState.set("lunar_drugscreator:onboarded", onboarded, true)
+  RegisterNetEvent("lunar_drugscreator:usePresetConfig")
+  AddEventHandler("lunar_drugscreator:usePresetConfig", function(saveBackup)
+    local playerId = source
+    if not IsPlayerAdmin(playerId) then
       return
     end
-    if A0_3 then
-      L2_3 = MySQL
-      L2_3 = L2_3.update
-      L2_3 = L2_3.await
-      L3_3 = "REPLACE INTO lunar_drugscreator (`key`, `data`) VALUES (?, ?)"
-      L4_3 = {}
-      L5_3 = "config_backup"
-      L6_3 = json
-      L6_3 = L6_3.encode
-      L7_3 = ServerConfig
-      L6_3, L7_3 = L6_3(L7_3)
-      L4_3[1] = L5_3
-      L4_3[2] = L6_3
-      L4_3[3] = L7_3
-      L2_3(L3_3, L4_3)
+    if saveBackup then
+      MySQL.update.await("REPLACE INTO lunar_drugscreator (`key`, `data`) VALUES (?, ?)", {
+        "config_backup",
+        json.encode(ServerConfig)
+      })
     end
-    L2_3 = L2_1
-    L3_3 = DefaultConfig
-    L2_3 = L2_3(L3_3)
-    ServerConfig = L2_3
-    L2_3 = nil
-    L0_1 = L2_3
-    L2_3 = L5_1
-    L2_3()
-    L2_3 = 1
-    L3_3 = L1_1
-    L3_3 = #L3_3
-    L4_3 = 1
-    for L5_3 = L2_3, L3_3, L4_3 do
-      L6_3 = L1_1
-      L6_3 = L6_3[L5_3]
-      L6_3 = L6_3.reload
-      L6_3()
+    ServerConfig = NormalizeValue(DefaultConfig)
+    encodedConfigCache = nil
+    PersistServerConfig()
+    for _, module in ipairs(reloadableModules) do
+      module.reload()
     end
-    L2_3 = GlobalState
-    L3_3 = L2_3
-    L2_3 = L2_3.set
-    L4_3 = "lunar_drugscreator:onboarded"
-    L5_3 = 1
-    L6_3 = true
-    L2_3(L3_3, L4_3, L5_3, L6_3)
-    L2_3 = SetResourceKvpInt
-    L3_3 = "lunar_drugscreator:onboarded"
-    L4_3 = 1
-    L2_3(L3_3, L4_3)
-    L2_3 = TriggerLatentClientEvent
-    L3_3 = "lunar_drugscreator:init"
-    L4_3 = -1
-    L5_3 = 50000
-    L6_3 = L7_1
-    L6_3, L7_3 = L6_3()
-    L2_3(L3_3, L4_3, L5_3, L6_3, L7_3)
-    L2_3 = true
-    L0_2 = L2_3
-  end
-  L1_2(L2_2, L3_2)
-  L1_2 = lib
-  L1_2 = L1_2.callback
-  L1_2 = L1_2.register
-  L2_2 = "lunar_drugscreator:loadConfigBackup"
-  function L3_2(A0_3)
-    local L1_3, L2_3, L3_3, L4_3, L5_3, L6_3
-    L1_3 = IsPlayerAdmin
-    L2_3 = A0_3
-    L1_3 = L1_3(L2_3)
-    if not L1_3 then
+    GlobalState.set("lunar_drugscreator:onboarded", 1, true)
+    SetResourceKvpInt("lunar_drugscreator:onboarded", 1)
+    TriggerLatentClientEvent("lunar_drugscreator:init", -1, 50000, GetEncodedServerConfig())
+    onboarded = true
+  end)
+  lib.callback.register("lunar_drugscreator:loadConfigBackup", function(playerId)
+    if not IsPlayerAdmin(playerId) then
       return
     end
-    L1_3 = MySQL
-    L1_3 = L1_3.single
-    L1_3 = L1_3.await
-    L2_3 = "SELECT data FROM lunar_drugscreator WHERE `key` = ?"
-    L3_3 = {}
-    L4_3 = "config_backup"
-    L3_3[1] = L4_3
-    L1_3 = L1_3(L2_3, L3_3)
-    if not L1_3 then
-      L2_3 = false
-      return L2_3
+    local result = MySQL.single.await("SELECT data FROM lunar_drugscreator WHERE `key` = ?", { "config_backup" })
+    if not result then
+      return false
     end
-    L2_3 = L2_1
-    L3_3 = json
-    L3_3 = L3_3.decode
-    L4_3 = L1_3.data
-    L3_3, L4_3, L5_3, L6_3 = L3_3(L4_3)
-    L2_3 = L2_3(L3_3, L4_3, L5_3, L6_3)
-    ServerConfig = L2_3
-    L2_3 = nil
-    L0_1 = L2_3
-    L2_3 = L5_1
-    L2_3()
-    L2_3 = 1
-    L3_3 = L1_1
-    L3_3 = #L3_3
-    L4_3 = 1
-    for L5_3 = L2_3, L3_3, L4_3 do
-      L6_3 = L1_1
-      L6_3 = L6_3[L5_3]
-      L6_3 = L6_3.reload
-      L6_3()
+    ServerConfig = NormalizeValue(json.decode(result.data))
+    encodedConfigCache = nil
+    PersistServerConfig()
+    for _, module in ipairs(reloadableModules) do
+      module.reload()
     end
-    L2_3 = TriggerLatentClientEvent
-    L3_3 = "lunar_drugscreator:init"
-    L4_3 = -1
-    L5_3 = 50000
-    L6_3 = L7_1
-    L6_3 = L6_3()
-    L2_3(L3_3, L4_3, L5_3, L6_3)
-    L2_3 = true
-    return L2_3
-  end
-  L1_2(L2_2, L3_2)
-  L1_2 = RegisterNetEvent
-  L2_2 = "lunar_drugscreator:makeConfigBackup"
-  function L3_2()
-    local L0_3, L1_3, L2_3, L3_3, L4_3, L5_3, L6_3
-    L0_3 = source
-    L1_3 = IsPlayerAdmin
-    L2_3 = L0_3
-    L1_3 = L1_3(L2_3)
-    if not L1_3 then
+    TriggerLatentClientEvent("lunar_drugscreator:init", -1, 50000, GetEncodedServerConfig())
+    return true
+  end)
+  RegisterNetEvent("lunar_drugscreator:makeConfigBackup")
+  AddEventHandler("lunar_drugscreator:makeConfigBackup", function()
+    local playerId = source
+    if not IsPlayerAdmin(playerId) then
       return
     end
-    L1_3 = MySQL
-    L1_3 = L1_3.update
-    L1_3 = L1_3.await
-    L2_3 = "REPLACE INTO lunar_drugscreator (`key`, `data`) VALUES (?, ?)"
-    L3_3 = {}
-    L4_3 = "config_backup"
-    L5_3 = json
-    L5_3 = L5_3.encode
-    L6_3 = ServerConfig
-    L5_3, L6_3 = L5_3(L6_3)
-    L3_3[1] = L4_3
-    L3_3[2] = L5_3
-    L3_3[3] = L6_3
-    L1_3(L2_3, L3_3)
-  end
-  L1_2(L2_2, L3_2)
-  L1_2 = RegisterNetEvent
-  L2_2 = "lunar_drugscreator:dismissOnboarding"
-  function L3_2()
-    local L0_3, L1_3, L2_3, L3_3, L4_3, L5_3
-    L0_3 = source
-    L1_3 = IsPlayerAdmin
-    L2_3 = L0_3
-    L1_3 = L1_3(L2_3)
-    if L1_3 then
-      L1_3 = L0_2
-      if not L1_3 then
-        goto lbl_11
-      end
+    MySQL.update.await("REPLACE INTO lunar_drugscreator (`key`, `data`) VALUES (?, ?)", {
+      "config_backup",
+      json.encode(ServerConfig)
+    })
+  end)
+  RegisterNetEvent("lunar_drugscreator:dismissOnboarding")
+  AddEventHandler("lunar_drugscreator:dismissOnboarding", function()
+    local playerId = source
+    if not IsPlayerAdmin(playerId) then
+      return
     end
-    do return end
-    ::lbl_11::
-    L1_3 = GlobalState
-    L2_3 = L1_3
-    L1_3 = L1_3.set
-    L3_3 = "lunar_drugscreator:onboarded"
-    L4_3 = 1
-    L5_3 = true
-    L1_3(L2_3, L3_3, L4_3, L5_3)
-    L1_3 = SetResourceKvpInt
-    L2_3 = "lunar_drugscreator:onboarded"
-    L3_3 = 1
-    L1_3(L2_3, L3_3)
-    L1_3 = true
-    L0_2 = L1_3
-  end
-  L1_2(L2_2, L3_2)
-end
-L9_1(L10_1)
+    if onboarded then
+      return
+    end
+    GlobalState.set("lunar_drugscreator:onboarded", 1, true)
+    SetResourceKvpInt("lunar_drugscreator:onboarded", 1)
+    onboarded = true
+  end)
+end)

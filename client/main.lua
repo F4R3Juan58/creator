@@ -8,212 +8,89 @@
 
 
 
-local L0_1, L1_1, L2_1, L3_1, L4_1, L5_1, L6_1
 ServerConfig = nil
-L0_1 = {}
-L1_1 = Laboratories
-L2_1 = ProcessingZones
-L3_1 = Suppliers
-L4_1 = RetailSelling
-L0_1[1] = L1_1
-L0_1[2] = L2_1
-L0_1[3] = L3_1
-L0_1[4] = L4_1
-function L1_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2
-  L0_2 = ipairs
-  L1_2 = L0_1
-  L0_2, L1_2, L2_2, L3_2 = L0_2(L1_2)
-  for L4_2, L5_2 in L0_2, L1_2, L2_2, L3_2 do
-    L6_2 = L5_2.reload
-    L6_2()
+local reloadableModules = {}
+reloadableModules[1] = Laboratories
+reloadableModules[2] = ProcessingZones
+reloadableModules[3] = Suppliers
+reloadableModules[4] = RetailSelling
+function ReloadClientModules()
+  for _, module in ipairs(reloadableModules) do
+    module.reload()
   end
-  L0_2 = UI
-  L0_2 = L0_2.sendMessage
-  L1_2 = "updateServerConfig"
-  L2_2 = {}
-  L3_2 = ServerConfig
-  L2_2.config = L3_2
-  L2_2.force = false
-  L0_2(L1_2, L2_2)
+  UI.sendMessage("updateServerConfig", {
+    config = ServerConfig,
+    force = false
+  })
 end
-function L2_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2
-  L2_2 = ""
-  L3_2 = 1
-  L4_2 = #A0_2
-  L5_2 = 1
-  for L6_2 = L3_2, L4_2, L5_2 do
-    L7_2 = string
-    L7_2 = L7_2.byte
-    L8_2 = A1_2
-    L9_2 = #A1_2
-    L9_2 = L6_2 % L9_2
-    L9_2 = L9_2 + 1
-    L7_2 = L7_2(L8_2, L9_2)
-    L8_2 = L2_2
-    L9_2 = string
-    L9_2 = L9_2.char
-    L10_2 = string
-    L10_2 = L10_2.byte
-    L11_2 = A0_2
-    L12_2 = L6_2
-    L10_2 = L10_2(L11_2, L12_2)
-    L10_2 = L10_2 ~ L7_2
-    L9_2 = L9_2(L10_2)
-    L8_2 = L8_2 .. L9_2
-    L2_2 = L8_2
+function DecodeConfigPayload(encodedPayload, secretKey)
+  local decodedPayload = ""
+  for index = 1, #encodedPayload, 1 do
+    local secretByte = string.byte(secretKey, index % #secretKey + 1)
+    decodedPayload = decodedPayload .. string.char(string.byte(encodedPayload, index) ~ secretByte)
   end
-  L3_2 = json
-  L3_2 = L3_2.decode
-  L4_2 = L2_2
-  return L3_2(L4_2)
+  return json.decode(decodedPayload)
 end
-function L3_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2
-  if nil ~= A0_2 then
-    L1_2 = type
-    L2_2 = A0_2
-    L1_2 = L1_2(L2_2)
-    if "number" ~= L1_2 then
-      L1_2 = type
-      L2_2 = A0_2
-      L1_2 = L1_2(L2_2)
-      if "string" ~= L1_2 then
-        L1_2 = type
-        L2_2 = A0_2
-        L1_2 = L1_2(L2_2)
-        if "boolean" ~= L1_2 then
-          L1_2 = type
-          L2_2 = A0_2
-          L1_2 = L1_2(L2_2)
-          if "function" ~= L1_2 then
-            goto lbl_24
-          end
-        end
-      end
+function NormalizeValue(value)
+  if nil ~= value then
+    if "number" == type(value) or "string" == type(value) or "boolean" == type(value) or "function" == type(value) then
+      return value
     end
   end
-  do return A0_2 end
-  ::lbl_24::
-  L1_2 = A0_2.x
-  if nil ~= L1_2 then
-    L1_2 = A0_2.y
-    if nil ~= L1_2 then
-      L1_2 = A0_2.z
-      if nil ~= L1_2 then
-        L1_2 = A0_2.w
-        if nil ~= L1_2 then
-          L1_2 = vector4
-          L2_2 = A0_2.x
-          L3_2 = A0_2.y
-          L4_2 = A0_2.z
-          L5_2 = A0_2.w
-          return L1_2(L2_2, L3_2, L4_2, L5_2)
-        else
-          L1_2 = vector3
-          L2_2 = A0_2.x
-          L3_2 = A0_2.y
-          L4_2 = A0_2.z
-          return L1_2(L2_2, L3_2, L4_2)
-        end
-      end
-    end
-  end
-  L1_2 = {}
-  L2_2 = pairs
-  L3_2 = A0_2
-  L2_2, L3_2, L4_2, L5_2 = L2_2(L3_2)
-  for L6_2, L7_2 in L2_2, L3_2, L4_2, L5_2 do
-    L8_2 = L6_2
-    L9_2 = type
-    L10_2 = L6_2
-    L9_2 = L9_2(L10_2)
-    if "string" == L9_2 then
-      L9_2 = tonumber
-      L10_2 = L6_2
-      L9_2 = L9_2(L10_2)
-      if L9_2 then
-        L8_2 = L9_2
-        L1_2[L6_2] = nil
-      end
-    end
-    L9_2 = type
-    L10_2 = L7_2
-    L9_2 = L9_2(L10_2)
-    if "string" == L9_2 and "" == L7_2 then
-      L1_2[L8_2] = nil
+  if nil ~= value.x and nil ~= value.y and nil ~= value.z then
+    if nil ~= value.w then
+      return vector4(value.x, value.y, value.z, value.w)
     else
-      L9_2 = L3_1
-      L10_2 = L7_2
-      L9_2 = L9_2(L10_2)
-      L1_2[L8_2] = L9_2
+      return vector3(value.x, value.y, value.z)
     end
   end
-  return L1_2
+  local normalizedTable = {}
+  for key, itemValue in pairs(value) do
+    local normalizedKey = key
+    if "string" == type(key) then
+      local numericKey = tonumber(key)
+      if numericKey then
+        normalizedKey = numericKey
+        normalizedTable[key] = nil
+      end
+    end
+    if "string" == type(itemValue) and "" == itemValue then
+      normalizedTable[normalizedKey] = nil
+    else
+      normalizedTable[normalizedKey] = NormalizeValue(itemValue)
+    end
+  end
+  return normalizedTable
 end
-L4_1 = CreateThread
-function L5_1()
-  local L0_2, L1_2
+CreateThread(function()
   while true do
-    L0_2 = Framework
-    L0_2 = L0_2.isPlayerLoaded
-    L0_2 = L0_2()
-    if L0_2 then
+    if Framework.isPlayerLoaded() then
       break
     end
-    L0_2 = Wait
-    L1_2 = 100
-    L0_2(L1_2)
+    Wait(100)
   end
-  L0_2 = TriggerServerEvent
-  L1_2 = "lunar_drugscreator:init"
-  L0_2(L1_2)
-end
-L4_1(L5_1)
-L4_1 = RegisterNetEvent
-L5_1 = "lunar_drugscreator:init"
-function L6_1(A0_2)
-  local L1_2, L2_2, L3_2
-  if not A0_2 then
+  TriggerServerEvent("lunar_drugscreator:init")
+end)
+RegisterNetEvent("lunar_drugscreator:init")
+AddEventHandler("lunar_drugscreator:init", function(configPayload)
+  if not configPayload then
     return
   end
-  L1_2 = L2_1
-  L2_2 = A0_2
-  L3_2 = "PUDI6iaaIBish2g71o0QKJVmMnTWAKGviIpuO"
-  L1_2 = L1_2(L2_2, L3_2)
-  L2_2 = L3_1
-  L3_2 = L1_2
-  L2_2 = L2_2(L3_2)
-  ServerConfig = L2_2
-  L2_2 = L1_1
-  L2_2()
-end
-L4_1(L5_1, L6_1)
-L4_1 = RegisterNetEvent
-L5_1 = "lunar_drugscreator:updateServerConfig"
-function L6_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2
-  L2_2 = ServerConfig
-  if not L2_2 then
+  local decodedConfig = DecodeConfigPayload(configPayload, "PUDI6iaaIBish2g71o0QKJVmMnTWAKGviIpuO")
+  ServerConfig = NormalizeValue(decodedConfig)
+  ReloadClientModules()
+end)
+RegisterNetEvent("lunar_drugscreator:updateServerConfig")
+AddEventHandler("lunar_drugscreator:updateServerConfig", function(configPath, updatedValue)
+  if not ServerConfig then
     return
   end
-  L2_2 = ServerConfig
-  L3_2 = 1
-  L4_2 = #A0_2
-  L4_2 = L4_2 - 1
-  L5_2 = 1
-  for L6_2 = L3_2, L4_2, L5_2 do
-    L7_2 = A0_2[L6_2]
-    L2_2 = L2_2[L7_2]
+  local currentConfigBranch = ServerConfig
+  for index = 1, #configPath - 1, 1 do
+    local branchKey = configPath[index]
+    currentConfigBranch = currentConfigBranch[branchKey]
   end
-  L3_2 = #A0_2
-  L3_2 = A0_2[L3_2]
-  L4_2 = L3_1
-  L5_2 = A1_2
-  L4_2 = L4_2(L5_2)
-  L2_2[L3_2] = L4_2
-  L3_2 = L1_1
-  L3_2()
-end
-L4_1(L5_1, L6_1)
+  local finalKey = configPath[#configPath]
+  currentConfigBranch[finalKey] = NormalizeValue(updatedValue)
+  ReloadClientModules()
+end)
